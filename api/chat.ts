@@ -71,7 +71,7 @@ export default async function handler(req: any, res: any) {
     const ai = getAiClient();
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+     model: "gemini-flash-latest",
       contents,
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
