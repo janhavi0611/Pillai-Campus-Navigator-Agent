@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
-import apiRouter from "./src/server/api.js";
+import apiRouter from "./src/server/api.ts";
 
 // Load environment variables
 dotenv.config();

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { GoogleGenAI } from "@google/genai";
-import { SYSTEM_INSTRUCTION } from "./systemInstructions.js";
+import { SYSTEM_INSTRUCTION } from "./systemInstructions.ts";
 
 const router = Router();
 
