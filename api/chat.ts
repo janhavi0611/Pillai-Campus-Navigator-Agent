@@ -83,10 +83,44 @@ export default async function handler(req: any, res: any) {
       text: response.text || "I'm sorry, I couldn't generate a navigation route.",
     });
   } catch (error: any) {
-    console.error("Error in Gemini chat API route:", error);
-    return res.status(500).json({
-      error: "Failed to communicate with Pillai Navigator AI engine",
-      details: error.message || String(error),
-    });
+  console.error("Gemini Error:", error);
+
+  const lastMessage =
+    req.body?.messages?.[req.body.messages.length - 1]?.text?.toLowerCase() || "";
+
+  let offlineResponse =
+    "⚠️ AI service is temporarily unavailable.\n\nUsing offline campus navigation.\n\nTell me where you want to go.";
+
+  if (lastMessage.includes("canteen")) {
+    offlineResponse = `📍 Destination: Canteen
+
+1. Walk straight from Gate 1.
+2. Pass the Admission Office.
+3. Turn left near the Quad.
+4. The canteen is ahead.
+
+Estimated time: 2 minutes.`;
   }
+
+  if (lastMessage.includes("ai") || lastMessage.includes("ml")) {
+    offlineResponse = `📍 AI & ML Lab (P409)
+
+• Go to the Central Lift.
+• Take the lift to the 4th Floor.
+• Turn right.
+• The AI & ML Lab is beside the Robotics Lab.`;
+  }
+
+  if (lastMessage.includes("placement")) {
+    offlineResponse = `📍 Placement Cell
+
+Ground Floor
+
+Beside the Principal's Office.`;
+  }
+
+  return res.json({
+    text: offlineResponse,
+  });
+}
 }
