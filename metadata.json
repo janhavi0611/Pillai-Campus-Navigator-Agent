@@ -1,0 +1,6 @@
+{
+  "name": "Pillai Navigator AI",
+  "description": "An intelligent indoor campus navigation assistant for Pillai College of Engineering, powered by Gemini and using official campus maps.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
