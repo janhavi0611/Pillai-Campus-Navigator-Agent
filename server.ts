@@ -1,11 +1,16 @@
+import dotenv from "dotenv";
+dotenv.config();
+
 import express from "express";
 import path from "path";
-import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
-import apiRouter from "./src/server/api.ts";
+import apiRouter from "./src/server/api.js";
 
 // Load environment variables
-dotenv.config();
+const result = dotenv.config();
+
+console.log(result.parsed);
+console.log("process.env.GEMINI_API_KEY =", process.env.GEMINI_API_KEY);
 
 async function startServer() {
   const app = express();
