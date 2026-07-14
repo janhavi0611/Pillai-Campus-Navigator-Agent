@@ -1,27 +1,23 @@
 import { Router } from "express";
-import { GoogleGenAI } from "@google/genai";
+import OpenAI from "openai";
 import { SYSTEM_INSTRUCTION } from "./systemInstructions.js";
 
 const router = Router();
 
-// Shared Gemini client instance
-let aiClient: GoogleGenAI | null = null;
+// Shared OpenRouter client instance
+let aiClient: OpenAI | null = null;
 
-function getAiClient(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY;
+function getAiClient(): OpenAI {
+  const apiKey = process.env.OPENROUTER_API_KEY;
 
   if (!apiKey) {
-    throw new Error("GEMINI_API_KEY environment variable is required");
+    throw new Error("OPENROUTER_API_KEY environment variable is required");
   }
 
   if (!aiClient) {
-    aiClient = new GoogleGenAI({
+    aiClient = new OpenAI({
       apiKey,
-      httpOptions: {
-        headers: {
-          "User-Agent": "aistudio-build",
-        },
-      },
+      baseURL: "https://openrouter.ai/api/v1",
     });
   }
 
@@ -42,15 +38,15 @@ router.post("/chat", async (req, res) => {
     }
 
     // Offline mode if no API key
-    if (!process.env.GEMINI_API_KEY) {
+    if (!process.env.OPENROUTER_API_KEY) {
       console.warn(
-        "GEMINI_API_KEY is not defined. Using offline mock navigation mode."
+        "OPENROUTER_API_KEY is not defined. Using offline mock navigation mode."
       );
 
       const lastMessage = messages[messages.length - 1]?.text || "";
 
       let offlineResponse =
-        "👋 Hello! I am operating in offline demonstration mode since the GEMINI_API_KEY is not configured.\n\nPlease configure your Gemini API key in the .env file.";
+        "👋 Hello! I am operating in offline demonstration mode since the OPENROUTER_API_KEY is not configured.\n\nPlease configure your OpenRouter API key in the .env file.";
 
       if (lastMessage.toLowerCase().includes("canteen")) {
         offlineResponse = `📍 Destination: Canteen
@@ -118,30 +114,32 @@ Examples:
       return res.json({ text: offlineResponse });
     }
 
-    // Convert messages to Gemini format
-    const contents = messages.map((msg) => ({
-      role: msg.sender === "user" ? "user" : "model",
-      parts: [{ text: msg.text }],
-    }));
-
     const ai = getAiClient();
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
-      contents,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.2,
+    const chatMessages = [
+      {
+        role: "system" as const,
+        content: SYSTEM_INSTRUCTION,
       },
+      ...messages.map((msg) => ({
+        role: msg.sender === "user" ? ("user" as const) : ("assistant" as const),
+        content: msg.text,
+      })),
+    ];
+
+    const response = await ai.chat.completions.create({
+      model: "openrouter/free",
+      messages: chatMessages,
+      temperature: 0.2,
     });
 
     return res.json({
       text:
-        response.text ||
+        response.choices[0]?.message?.content ||
         "I'm sorry, I couldn't generate a navigation route.",
     });
   } catch (error: any) {
-    console.error("Error in Gemini chat API route:", error);
+    console.error("Error in OpenRouter chat API route:", error);
 
     return res.status(500).json({
       error: "Failed to communicate with Pillai Navigator AI engine",
