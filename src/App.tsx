@@ -193,6 +193,7 @@ Just tell me where you are and where you'd like to go.`,
   const [currentLocation, setCurrentLocation] = useState("Unknown");
   const [selectedFloor, setSelectedFloor] = useState<number>(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isExplorerOpen, setIsExplorerOpen] = useState(false);
   const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
   
   // Custom states for user roles and accessibility modes
@@ -515,32 +516,34 @@ Just tell me where you are and where you'd like to go.`,
       <div className="flex-1 flex flex-col md:flex-row relative overflow-hidden">
         
         {/* LEFT COLUMN: Modern Chat Interface */}
-        <main className="flex-1 flex flex-col border-r border-slate-200 min-w-0">
+        <main className="flex-1 flex flex-col border-r border-slate-200 min-w-0 min-h-0">
           
           {/* Header */}
-          <header className="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 z-10 shrink-0">
-            <div className="flex items-center gap-3">
+          <header className="h-14 sm:h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-3 sm:px-6 z-10 shrink-0">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="md:hidden p-2 -ml-2 text-slate-500 hover:text-slate-700 rounded-lg"
+                className="md:hidden p-2 -ml-1 text-slate-500 hover:text-slate-700 rounded-lg shrink-0"
               >
                 <Menu className="w-5 h-5" />
               </button>
-              <span className="text-xs font-bold text-blue-600 bg-blue-50 py-1 px-2.5 rounded-full uppercase tracking-wider">
-                Pillai College of Engineering
+              <span className="text-[10px] sm:text-xs font-bold text-blue-600 bg-blue-50 py-1 px-2 sm:px-2.5 rounded-full uppercase tracking-wider whitespace-nowrap shrink-0">
+                <span className="hidden sm:inline">Pillai College of Engineering</span>
+                <span className="sm:hidden">PCE</span>
               </span>
               <span className="text-slate-300 hidden sm:inline">|</span>
-              <span className="text-sm font-semibold text-slate-700 hidden sm:inline">Campus Assistant</span>
+              <span className="text-sm font-semibold text-slate-700 hidden sm:inline truncate">Campus Assistant</span>
             </div>
             
-            <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-xs text-slate-500 font-mono shrink-0">
               <Activity className="w-4 h-4 text-green-500" />
-              <span>AI Engine Active</span>
+              <span className="hidden sm:inline">AI Engine Active</span>
+              <span className="sm:hidden text-[10px]">Online</span>
             </div>
           </header>
 
           {/* Chat Messages viewport */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 space-y-6">
             
             {/* If there's only the greeting message, display suggested prompts beautifully */}
             {messages.length === 1 && (
@@ -673,7 +676,7 @@ Just tell me where you are and where you'd like to go.`,
           </div>
 
           {/* BOTTOM: Input and send area */}
-          <div className="p-4 bg-white border-t border-slate-200 shrink-0">
+          <div className="p-3 sm:p-4 bg-white border-t border-slate-200 shrink-0">
             <div className="max-w-3xl mx-auto">
               <form
                 onSubmit={(e) => {
@@ -686,18 +689,18 @@ Just tell me where you are and where you'd like to go.`,
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  placeholder="Ask for directions (e.g., 'Take me from Gate 1 to AI & ML Lab')"
-                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 pl-6 pr-14 shadow-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm text-slate-800"
+                  placeholder="Ask for directions (e.g., 'Gate 1 to AI & ML Lab')"
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3.5 sm:py-4 pl-4 sm:pl-6 pr-14 shadow-sm focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-base sm:text-sm text-slate-800"
                 />
                 <button
                   type="submit"
                   disabled={!input.trim() || isTyping}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-11 h-11 bg-[#1E3A8A] text-white rounded-xl flex items-center justify-center hover:bg-blue-800 disabled:opacity-50 disabled:hover:bg-[#1E3A8A] transition-colors"
+                  className="absolute right-2 sm:right-2.5 top-1/2 -translate-y-1/2 w-10 h-10 sm:w-11 sm:h-11 bg-[#1E3A8A] text-white rounded-xl flex items-center justify-center hover:bg-blue-800 disabled:opacity-50 disabled:hover:bg-[#1E3A8A] transition-colors"
                 >
                   <Send className="w-4 h-4" />
                 </button>
               </form>
-              <div className="mt-2.5 flex items-center justify-between text-[10px] text-slate-400 uppercase tracking-widest px-1">
+              <div className="mt-2.5 hidden sm:flex items-center justify-between text-[10px] text-slate-400 uppercase tracking-widest px-1">
                 <span>Campus Maps Knowledge Source</span>
                 <span>Pillai College of Engineering Official Database</span>
               </div>
@@ -706,16 +709,25 @@ Just tell me where you are and where you'd like to go.`,
         </main>
 
         {/* RIGHT COLUMN: Interactive PCE Floor Directory Map Explorer */}
-        <section className="w-full md:w-80 lg:w-96 bg-white flex flex-col shrink-0">
+        <section className="w-full md:w-80 lg:w-96 bg-white flex flex-col shrink-0 border-t md:border-t-0 border-slate-200 md:max-h-none max-h-[60vh] min-h-0">
           
-          {/* Header */}
-          <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+          {/* Header (tap to expand/collapse on mobile) */}
+          <button
+            onClick={() => setIsExplorerOpen((prev) => !prev)}
+            className="w-full p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0 md:pointer-events-none text-left"
+          >
             <div className="flex items-center gap-2">
               <Layers className="w-4 h-4 text-blue-600" />
               <h3 className="font-bold text-slate-800 text-sm">PCE Campus Explorer</h3>
             </div>
-            <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Floor Directory</span>
-          </div>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full hidden sm:inline">Floor Directory</span>
+              <span className={`md:hidden text-slate-400 transition-transform duration-200 ${isExplorerOpen ? "rotate-180" : ""}`}>▼</span>
+            </div>
+          </button>
+
+          {/* Collapsible body: hidden on mobile until toggled, always shown on desktop */}
+          <div className={`${isExplorerOpen ? "flex" : "hidden"} md:flex flex-col flex-1 min-h-0`}>
 
           {/* Selector Tabs */}
           <div className="grid grid-cols-7 gap-1 border-b border-slate-100 p-2 shrink-0 bg-slate-50/50">
@@ -848,6 +860,8 @@ Just tell me where you are and where you'd like to go.`,
               <HelpCircle className="w-3.5 h-3.5 text-blue-600" /> PCE Navigation Helper
             </p>
             <p className="leading-relaxed">Click any floor above to view major office & lab landmarks, or tap the arrow icon next to a location to instantly chart a path from your current position!</p>
+          </div>
+
           </div>
 
         </section>
